@@ -1,9 +1,8 @@
 import boto3
 import json
 
-with open("config.json") as fp:
-    config = json.load(fp)
-
+CKPT_BUCKET = "checkpoints"
+DATA_BUCKET = "data"
 
 def get_s3client(config):
     """access s3 client
