@@ -39,6 +39,11 @@ def list_object(s3, bucket_name, max_keys=1000):
     response = check_status(s3.list_objects(Bucket=bucket_name, MaxKeys=max_keys), RETRIEVE_STATUS)
     return [obj['Key'] for obj in response['Contents']]
 
+def list_object_specific(s3, bucket_name, prefix, max_keys=1000):
+    """Returns path of each objects"""
+    response = check_status(s3.list_objects(Bucket=bucket_name, Prefix=prefix, Delimiter='/', MaxKeys=max_keys), RETRIEVE_STATUS)
+    return [obj['Key'] for obj in response['Contents']]
+
 def create_dir(s3, bucket_name, dir_name):
     """CREATE empty directory"""
     return check_status(s3.put_object(Bucket=bucket_name, Key=dir_name), CREATE_STATUS)
@@ -91,7 +96,6 @@ def download_dir_withlocal(s3, bucket_name, dir_object, local_dir_path=None):
                 local_path = path
             download_file(s3, bucket_name, path, local_path)
             print("{} downloaded".format(path))
-
 
 def download_dir(s3, bucket_name, dir_object):
     """Download dir from bucket. Directory must have only one level. 
