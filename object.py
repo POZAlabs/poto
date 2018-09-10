@@ -64,7 +64,7 @@ def download_file(s3, bucket_name, object_name, local_file_path=None):
 
 def delete_file(s3, bucket_name, object_name):
     """DELETE an object"""
-    print('Warning!!! 여기서 지우면 복구할 수 없어욧! 자칫 for문이라도 잘못 돌린 날에는..!!')
+    # print('Warning!!! 여기서 지우면 복구할 수 없어욧! 자칫 for문이라도 잘못 돌린 날에는..!!')
     s3.delete_object(Bucket=bucket_name, Key=object_name)
 
 def upload_dir(s3, bucket_name, local_dir_path):
