@@ -21,6 +21,8 @@ def download_ckpt(s3, ckpt_dir, training=False):
     """
     if ckpt_dir[-1] != '/':
         ckpt_dir += '/'
+    assert ckpt_dir[:12] == 'checkpoints/'
+
     try:
         objects = list_object_specific(s3, 'checkpoints', ckpt_dir)
     except KeyError as e:
@@ -29,6 +31,10 @@ def download_ckpt(s3, ckpt_dir, training=False):
         else:
             raise KeyError(e)
     else:
+        try:
+            os.mkdir(ckpt_dir)
+        except OSError:
+            print('Dir already exists.')
         latest_step = max(get_ckpt_steps(objects))
         download_file(s3, 'checkpoints', os.path.join(ckpt_dir, 'checkpoint'))
         for extension in CKPT_EXTENSIONS:
