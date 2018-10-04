@@ -1,5 +1,0 @@
-include poto/access.py
-include poto/bucket.py
-include poto/ckpt.py
-include poto/object.py
-include poto/status.py
