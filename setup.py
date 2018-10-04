@@ -8,7 +8,7 @@ setup(
     author='Koomook',
     author_email='contact@pozalabs.com',
     license='Unlicense',
-    packages=find_packages()
+    packages=find_packages(),
     install_requires=[
         'boto3',
         'numpy',
