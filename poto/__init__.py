@@ -3,5 +3,4 @@ from poto import (
     bucket,
     ckpt,
     object,
-    status,
     )
