@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='poto',
@@ -8,7 +8,7 @@ setup(
     author='Koomook',
     author_email='contact@pozalabs.com',
     license='Unlicense',
-    packages=['poto'],
+    packages=find_packages()
     install_requires=[
         'boto3',
         'numpy',
