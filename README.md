@@ -1,7 +1,10 @@
 # poto
-boto3 wrapper
+boto3 wrapper for DL training and inference
 
-## config.json contains
+# install
+`pip install git+https://github.com/POZAlabs/poto`
+
+## config must contains
 ```
 {
     "service_name" : "s3",
