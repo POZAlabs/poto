@@ -5,8 +5,8 @@ Update
 Destroy
 """
 import os
-from .status import check_status
-from .status import CREATE_STATUS, RETRIEVE_STATUS, DELETE_STATUS
+from poto.status import check_status
+from poto.status import CREATE_STATUS, RETRIEVE_STATUS, DELETE_STATUS
 
 
 def _walk_dir(dir_path):

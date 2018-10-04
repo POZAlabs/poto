@@ -1,7 +1,7 @@
 import numpy as np
 import os
 import re
-from .object import list_object_specific, download_file
+from poto.object import list_object_specific, download_file
 
 MODEL_FILENAME = 'model_ckpt'
 CKPT_START = MODEL_FILENAME+'-'

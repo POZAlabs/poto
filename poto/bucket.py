@@ -4,8 +4,8 @@ Retrieve
 Update
 Destroy
 """
-from .status import check_status
-from .status import CREATE_STATUS, RETRIEVE_STATUS, DELETE_STATUS
+from poto.status import check_status
+from poto.status import CREATE_STATUS, RETRIEVE_STATUS, DELETE_STATUS
 
 
 def create_bucket(s3, bucket_name):
