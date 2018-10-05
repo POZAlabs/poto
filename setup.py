@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='poto',
-    version='1.0.1',
+    version='1.0.2',
     description='boto3 wrapper for deep learning',
     url='https://github.com/pozalabs/poto',
     author='Koomook',
