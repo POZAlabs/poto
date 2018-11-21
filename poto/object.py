@@ -143,8 +143,21 @@ def download_dir(s3, bucket_name, dir_object, save_tmp=True):
             
             if save_tmp:
                 local_file_path = os.path.join('/tmp', path)
+
+                dir_path = '/tmp'
+                # 마지막 값은 파일 이름
+                dirs = path.split('/')[:-1]
+                for unit_path in dirs:
+                    dir_path = os.path.join(dir_path, unit_path)
+                    print(dir_path)
+                    try:
+                        os.mkdir(dir_path)
+                    except OSError:
+                        pass
             else:
                 local_file_path = path
+            
+            
             download_file(s3, bucket_name, path, local_file_path)
             print("{} downloaded".format(path))
 
