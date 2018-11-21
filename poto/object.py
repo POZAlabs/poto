@@ -92,6 +92,7 @@ def upload_dir(s3, bucket_name, local_dir_path):
     for file in _walk_dir(local_dir_path):
         upload_file(s3, file, bucket_name)
 
+# TODO: 버그 덩어리! 한 뎊쓰 밖에 못만듦ㅋㅋ
 def upload_dir_depth(s3, bucket_name, local_dir_path, depth=1):
     """depth=1 makes one directory"""
     for root, file in _walk_dir_v2(local_dir_path):
