@@ -17,6 +17,15 @@ def _walk_dir(dir_path):
         for file in files:
             yield os.path.join(root, file)
 
+
+def _walk_dir_v2(dir_path):
+    """Generates each path of file by retreiving inside of dir"""
+    for root, dirs, files in os.walk(dir_path):
+        if files == []:
+            continue
+        for file in files:
+            yield root, file
+
 def list_object_detail(s3, bucket_name, max_keys=1000):
     """Retrieve all object in bucket and more detail informations are come.
     
@@ -71,6 +80,14 @@ def delete_file(s3, bucket_name, object_name, warn=True):
 def upload_dir(s3, bucket_name, local_dir_path):
     for file in _walk_dir(local_dir_path):
         upload_file(s3, file, bucket_name)
+
+def upload_dir_depth(s3, bucket_name, local_dir_path, depth=1):
+    """depth=1 makes one directory"""
+    for root, file in _walk_dir_v2(local_dir_path):
+        local_file_path = os.path.join(root, file)
+        dirs = root.split('/')[-depth-1]
+        object_name = os.path.join(dirs, file)
+        upload_file(s3, local_file_path, bucket_name, object_name)
 
 def download_dir_withlocal(s3, bucket_name, dir_object, local_dir_path=None):
     if dir_object[-1] != '/':
