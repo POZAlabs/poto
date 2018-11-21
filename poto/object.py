@@ -152,10 +152,15 @@ def download_dir(s3, bucket_name, dir_object, save_tmp=True):
         # download each obejcts
         for i, obj in enumerate(result['Contents']):
             path = obj['Key']
+            
             # 첫 번째 시도에서 디렉토리를 만듭니다.
             if i == 0:
                 _mkdir_loop(path, '/tmp')
-            
+
+            # 혹시나 문장을 찾을 때는 pass 합니다.
+            if path[-1] == '/':
+                continue
+
             if save_tmp:
                 local_file_path = os.path.join('/tmp', path)
             else:
