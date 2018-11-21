@@ -26,6 +26,17 @@ def _walk_dir_v2(dir_path):
         for file in files:
             yield root, file
 
+def _mkdir_loop(s3_path, local_target_path='/tmp'):
+    local_target_path = '/tmp'
+    # 마지막 값은 파일 이름
+    dirs = s3_path.split('/')[:-1]
+    for unit_path in dirs:
+        local_target_path = os.path.join(local_target_path, unit_path)
+        try:
+            os.mkdir(local_target_path)
+        except OSError:
+            pass
+
 def list_object_detail(s3, bucket_name, max_keys=1000):
     """Retrieve all object in bucket and more detail informations are come.
     
@@ -138,26 +149,17 @@ def download_dir(s3, bucket_name, dir_object, save_tmp=True):
         raise AssertionError(msg, [obj.get('Prefix') for obj in result.get('CommonPrefixes')])
     else:
         # download each obejcts
-        for obj in result['Contents']:
+        for i, obj in enumerate(result['Contents']):
             path = obj['Key']
+            # 첫 번째 시도에서 디렉토리를 만듭니다.
+            if i == 0:
+                _mkdir_loop(path, '/tmp')
             
             if save_tmp:
                 local_file_path = os.path.join('/tmp', path)
-
-                dir_path = '/tmp'
-                # 마지막 값은 파일 이름
-                dirs = path.split('/')[:-1]
-                for unit_path in dirs:
-                    dir_path = os.path.join(dir_path, unit_path)
-                    print(dir_path)
-                    try:
-                        os.mkdir(dir_path)
-                    except OSError:
-                        pass
             else:
                 local_file_path = path
-            
-            
+
             download_file(s3, bucket_name, path, local_file_path)
             print("{} downloaded".format(path))
 
