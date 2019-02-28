@@ -101,6 +101,21 @@ def upload_dir_depth(s3, bucket_name, local_dir_path, depth=1):
         object_name = os.path.join(dirs, file)
         upload_file(s3, local_file_path, bucket_name, object_name)
 
+def upload_last_dir(s3, bucket_name, local_dir_path):
+    """가장 마지막에 있는 dir과 해당 dir에 있는 모든 dir과 file을 업로드합니다."""
+    dir_path_leng_without_last = _get_dir_path_length_without_last(local_dir_path)
+    for root, file in _walk_dir_v2(local_dir_path):
+        local_file_path = os.path.join(root, file)
+        upload_path = local_file_path[dir_path_leng_without_last:]
+        upload_file(s3, local_file_path, bucket_name, upload_path)
+
+def _get_dir_path_length_without_last(dir_path):
+    splited_path = dir_path.split('/')
+    dir_path_without_last = (lambda splited: splited[:-1] if splited[-1] else splited[:-2])(splited_path)
+    dir_path_without_last = '/'.join(dir_path_without_last) + '/'
+    
+    return len(dir_path_without_last)
+
 def download_dir_withlocal(s3, bucket_name, dir_object, local_dir_path=None):
     if dir_object[-1] != '/':
         dir_object += '/'
