@@ -69,11 +69,13 @@ def create_dir(s3, bucket_name, dir_name):
     return check_status(s3.put_object(Bucket=bucket_name, Key=dir_name), CREATE_STATUS)
 
 def upload_file(s3, local_file_path, bucket_name, object_name=None):
-    """CREATE or UPDATE an object via uploading local file."""
+    """CREATE or UPDATE an object via uploading local file.
+    Upload file in path same as local_file_path if you don't specify object_name.
+    """
     # It returns nothing
     if not object_name:
         object_name = local_file_path
-    s3.upload_file(local_file_path, bucket_name, object_name)
+    s3.upload_file(local_file_path, bucket_name, object_name) 
 
 def download_file(s3, bucket_name, object_name, local_file_path=None):
     """RETREIVE a file from S3 object"""
