@@ -10,8 +10,8 @@ setup(
     license='Unlicense',
     packages=['poto',],
     install_requires=[
-        'boto3',
-        'numpy',
+        # 'boto3',
+        # 'numpy',
     ],
     # setup_requires=["pytest-runner"],
     # tests_require=["pytest"],
