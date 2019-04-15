@@ -127,7 +127,7 @@ def download_dir_withlocal(s3, bucket_name, dir_object, local_dir_path=None):
             download_file(s3, bucket_name, path, local_path)
             print("{} downloaded".format(path))
 
-def download_dir(s3, bucket_name, dir_object, save_tmp=True):
+def download_dir(s3, bucket_name, dir_object, save_tmp=True, force_update=False):
     """Download dir from bucket. Directory must have only one level. 
     If wrong dir name is passed or more than one directory level is passed, raise AssertionError.
 
@@ -135,6 +135,7 @@ def download_dir(s3, bucket_name, dir_object, save_tmp=True):
         bucket_name: str, Name of bucket
         dir_object: str, Directory that contains files.
         save_tmp: bool, Save into /tmp or not
+        force_update: bool, Update even if object exists in local path
     
     Return:
         nothing.:)
@@ -165,7 +166,9 @@ def download_dir(s3, bucket_name, dir_object, save_tmp=True):
                 local_file_path = os.path.join('/tmp', path)
             else:
                 local_file_path = path
-
+            if not force_update:
+                if os.path.exists(local_file_path):
+                    continue
             download_file(s3, bucket_name, path, local_file_path)
             print("{} downloaded".format(path))
 
