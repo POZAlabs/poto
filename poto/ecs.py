@@ -17,12 +17,8 @@ def keep_only_one_task(client, cluster, service):
     response = client.list_tasks(cluster=cluster,
                                 serviceName=service,
                                 desiredStatus='RUNNING')
-    n_running_tasks = len(response['taskArns'])
     response['taskArns'].pop()
     
-    # 안전빵
-    assert n_running_tasks != len(response['taskArns']), "더 했다가는 작업이 다 죽어버려요..."
-
     for task_arn in response['taskArns']:
         client.stop_task(cluster=cluster,
                          task=task_arn)
