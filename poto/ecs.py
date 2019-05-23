@@ -13,11 +13,12 @@ def update_service(client, cluster, service, desired_count, sleep_time=180):
         print(f'모두 RUNNING이 되도록 {sleep_time}초 동안 기다릴게요!')
         time.sleep(sleep_time)
 
-def keep_only_one_task(client, cluster, service):
+def keep_only_n_task(client, cluster, service, n):
     response = client.list_tasks(cluster=cluster,
                                 serviceName=service,
                                 desiredStatus='RUNNING')
-    response['taskArns'].pop()
+    for _ in range(n):
+        response['taskArns'].pop()
     
     for task_arn in response['taskArns']:
         client.stop_task(cluster=cluster,
@@ -26,7 +27,7 @@ def keep_only_one_task(client, cluster, service):
     response = client.list_tasks(cluster=cluster,
                                 serviceName=service,
                                 desiredStatus='RUNNING')
-    assert len(response['taskArns']) == 1, f"{len(response['taskArns'])}개의 task가 남았어요."
+    assert len(response['taskArns']) == n, f"{len(response['taskArns'])}개의 task가 남았어요."
 
 def check_task_status(client, cluster, service, sleep_time=30):
     response = client.list_tasks(cluster=cluster,
