@@ -30,17 +30,21 @@ def keep_only_n_task(client, cluster, service, n):
     assert len(response['taskArns']) == n, f"{len(response['taskArns'])}개의 task가 남았어요."
 
 def check_task_status(client, cluster, service, sleep_time=30):
-    response = client.list_tasks(cluster=cluster,
-                                serviceName=service)
-    tasks = response['taskArns']
-    
     for _ in range(MAX_TRY):
-        # RUNNING으로 status에 filter를 걸어도 PEDDDING, ACTIVATING이 모두 잡혀버림
-        response = client.describe_tasks(cluster=cluster, tasks=tasks)
-        for task in response['tasks']:
-            if task['lastStatus'] != 'RUNNING':
-                print(f'RUNNING 상태가 아닌 task가 있어서 {sleep_time}초 동안 기다릴게요!')
-                time.sleep(sleep_time)
+        response = client.list_tasks(cluster=cluster,
+                                     serviceName=service)
+        tasks = response['taskArns']
+        
+        if tasks:
+            # RUNNING으로 status에 filter를 걸어도 PEDDDING, ACTIVATING이 모두 잡혀버림
+            response = client.describe_tasks(cluster=cluster, tasks=tasks)
+            for task in response['tasks']:
+                if task['lastStatus'] != 'RUNNING':
+                    print(f'RUNNING 상태가 아닌 task가 있어서 {sleep_time}초 동안 기다릴게요!')
+                    time.sleep(sleep_time)
+        else:
+            print(f'RUNNING 상태인 task가 없어서 {sleep_time}초 동안 기다릴게요!')
+            time.sleep(sleep_time)
     
     response = client.describe_tasks(cluster=cluster, tasks=tasks)
     for task in response['tasks']:
