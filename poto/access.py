@@ -1,5 +1,6 @@
 import boto3
 import json
+from botocore.config import Config
 
 CKPT_BUCKET = "checkpoints"
 DATA_BUCKET = "data"
@@ -14,7 +15,8 @@ def get_s3client(config):
     s3 = boto3.client(config['service_name'],
                       endpoint_url=config['endpoint_url'],
                       aws_access_key_id=config['access_key'],
-                      aws_secret_access_key=config['secret_key'])
+                      aws_secret_access_key=config['secret_key'],
+                      config=Config(signature_version='s3v4'))
     return s3
 
 def get_client(config):
