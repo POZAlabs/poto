@@ -76,7 +76,7 @@ def _get_editible_packages_pattern(is_non_editible_packages, zappa_stage):
     settings = json.load(open("zappa_settings.json"))
     if not is_non_editible_packages:    
         if not settings[zappa_stage].get('exclude'):
-            raise AssertionError('editible packages를 zappa_settings exclude에 추가해주세요. ex) "exclude": [your_packs]')
+            raise AssertionError('editible package pattern을 zappa_settings exclude에 추가해주세요. ex) "exclude": [your_packs*]')
         editible_packages_pattern = [p for p in settings[zappa_stage]['exclude'] if not re.search("|".join(DEFAULT_EXCLUDE_PACKS), p)]
         print('editible_packages_pattern', editible_packages_pattern)    
     else:
