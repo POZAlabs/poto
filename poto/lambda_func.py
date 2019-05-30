@@ -20,7 +20,7 @@ def create_lambda_layer(zappa_stage, output_path):
     # django 2.2부터는 mysqlclient 1.3.13을 쓰는데 
     # amazon linux 2017.03.1에 있는 lib~와 호환이 안 됨.
     output_path = set_home(output_path)
-    _check_django_mysql_version()
+    _check_django_version()
 
     postfix = datetime.now().strftime("%Y%m%d%H%M")
     temp_dir_path = _make_temp_dir(postfix)
@@ -84,18 +84,13 @@ def _get_editible_packages_pattern(is_non_editible_packages, zappa_stage):
     
     return editible_packages_pattern
 
-def _check_django_mysql_version():
+def _check_django_version():
     try:
         import django
         django_ver = django.__version__
         splited = django_ver.split('.')
         if int(splited[0]) == 2 and int(splited[1]) >= 2:
-            try:
-                import MySQLdb
-                raise AssertionError('mysqlclient 1.3.13은 lambda에서 쓸 수 없어요...')
-            # mysql을 db로 사용하지 않는 경우
-            except ModuleNotFoundError:
-                pass
+            raise AssertionError('django 2.2는 사용할 수 없어요')
     # django를 사용하지 않는 경우
     except ModuleNotFoundError:
         pass
