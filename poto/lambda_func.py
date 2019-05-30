@@ -32,7 +32,7 @@ def create_lambda_layer(zappa_stage, output_path):
 
     if os.path.getsize(output_zip_path) > ZIP_LIMIT_SIZE:
         raise AssertionError(f'package zip 용량이 {os.path.getsize(output_zip_path)}라서 {ZIP_LIMIT_SIZE}를 넘어가요')
-
+    
     layer_zip = f"layer_{postfix}.zip"
     _make_dir_archi(temp_dir_path, layer_zip)
 
@@ -142,9 +142,12 @@ def _make_dir_archi(temp_dir_path, layer_zip):
     os.makedirs(PACKAGE_PATH)
 
     for file_ in os.listdir(temp_dir_path):
-        if re.search(f'zappa_settings|{ZAPPA_OUTPUT_ZIP}|{PACKAGE_ROOT_PATH}', file_):
+        if file_ in ['zappa_settings.json', 'zappa_settings.py', ZAPPA_OUTPUT_ZIP, PACKAGE_ROOT_PATH] or\
+            'darwin.so' in file_:
+            print('exclude', file_)
             continue
-        elif re.search('[a-z]*\.so', file_):
+        elif re.search('[^a-z]*\.so', file_) and 'cpython' not in file_:
+            print(f'move to lib {file_}')
             shutil.move(file_, LIB_PATH)
         else:
             shutil.move(file_, PACKAGE_PATH)
