@@ -20,10 +20,10 @@ def get_s3client(config):
                       config=Config(signature_version='s3v4'))
     return s3
 
-def get_client(config):
-    client = boto3.client(config['service_name'],
-                       aws_access_key_id=config['access_key'],
-                       aws_secret_access_key=config['secret_key'],
-                       region_name=config['region_name'])
+def get_client(service_name, config):
+    client = boto3.client(service_name,
+                          aws_access_key_id=config['access_key'],
+                          aws_secret_access_key=config['secret_key'],
+                          region_name=config['region_name'])
     
     return client
