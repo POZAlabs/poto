@@ -87,13 +87,17 @@ def _get_editible_packages_pattern(is_non_editible_packages, zappa_stage):
 def _check_django_mysql_version():
     try:
         import django
-        if int(django.__version__) >= 2.2:
+        django_ver = django.__version__
+        splited = django_ver.split('.')
+        if int(splited[0]) == 2 and int(splited[1]) >= 2:
             try:
                 import MySQLdb
                 raise AssertionError('mysqlclient 1.3.13은 lambda에서 쓸 수 없어요...')
-            except:
+            # mysql을 db로 사용하지 않는 경우
+            except ModuleNotFoundError:
                 pass
-    except:
+    # django를 사용하지 않는 경우
+    except ModuleNotFoundError:
         pass
 
 def _copy_and_edit_settings(temp_dir_path, zappa_stage):
