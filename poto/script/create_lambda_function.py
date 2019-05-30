@@ -14,7 +14,7 @@ from poto.utils import set_home
 
 def get_parser():
     parser = argparse.ArgumentParser('lambda')
-    parser.add_argument('--config_path', type=str, help='config path containing aws access key and secret key')
+    parser.add_argument('--aws_config_path', type=str, help='config path containing aws access key and secret key')
     parser.add_argument('--zappa_stage', type=str, help='zappa_settings_key')
     parser.add_argument('--output_path', type=str, default=os.path.expanduser("~"), help='output path')
     parser.add_argument('--repo_path', type=str, help='zipped repo_path')
@@ -41,10 +41,9 @@ if __name__ == '__main__':
                                                args.zappa_stage)  
 
     settings = json.load(open(os.path.join(args.repo_path, "zappa_settings.json")))
-    config = json.load(open(args.config_path))
-    config['service_name'] = 'lambda'
-    lambda_client = get_client(config)
-
+    config = json.load(open(args.aws_config_path))
+    lambda_client = get_client('lambda', config)
+    
     # create layer
     response = lambda_client.publish_layer_version(LayerName=args.layer_name,
                                                 Content={'ZipFile': open(layer_zip_path, 'rb').read()},
