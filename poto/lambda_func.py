@@ -82,8 +82,8 @@ def _check_django_version():
         import django
         django_ver = django.__version__
         splited = django_ver.split('.')
-        if int(splited[0]) == 2 and int(splited[1]) >= 2:
-            raise AssertionError('django 2.2는 사용할 수 없어요')
+        if not(int(splited[0]) == 2 and int(splited[1]) == 1):
+            raise AssertionError('django 2.1이 아니면 사용할 수 없어요')
     # django를 사용하지 않는 경우
     except ModuleNotFoundError:
         pass
