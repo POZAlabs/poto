@@ -4,14 +4,16 @@ import time
 MAX_TRY = 20
 
 def update_service(client, cluster, service, desired_count, sleep_time=180):
-    client.update_service(cluster=cluster,
+    response = client.update_service(cluster=cluster,
                           service=service,
                           desiredCount=desired_count)
     
-    if desired_count > 1:
+    if desired_count >= 1:
         # wait until all running
         print(f'모두 RUNNING이 되도록 {sleep_time}초 동안 기다릴게요!')
         time.sleep(sleep_time)
+
+    return response
 
 def keep_only_n_task(client, cluster, service, n):
     response = client.list_tasks(cluster=cluster,
