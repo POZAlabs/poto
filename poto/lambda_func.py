@@ -36,21 +36,17 @@ def create_lambda_layer(zappa_stage, output_path):
     layer_zip = f"layer_{postfix}.zip"
     _make_dir_archi(temp_dir_path, layer_zip)
 
-    shutil.move(layer_zip, output_path)
-    shutil.rmtree(temp_dir_path)
-    zip_dest_path = os.path.join(output_path, layer_zip)
-
+    zip_dest_path = _move_zip_and_remove_temp(layer_zip, temp_dir_path, output_path)
     print(f'layer {zip_dest_path} created')
     
     return zip_dest_path
 
-def create_lambda_function_zip(dir_, output_zip_path, is_non_editible_packages, zappa_stage):
+def create_lambda_function_zip(dir_, output_path, is_non_editible_packages, zappa_stage):
     os.chdir(dir_)
     
     postfix = datetime.now().strftime("%Y%m%d%H%M")
     temp_dir_path =_make_temp_dir(postfix)
-    temp_dir = os.path.basename(temp_dir_path)
-
+    
     if not is_non_editible_packages:
         # default exclude에 포함 안 되는 거 제외
         editible_packages_pattern = _get_editible_packages_pattern(is_non_editible_packages, zappa_stage)
@@ -58,16 +54,13 @@ def create_lambda_function_zip(dir_, output_zip_path, is_non_editible_packages, 
     
     dir_ = (lambda dir_: dir_ if dir_[-1] != '/' else dir_[:-1])(dir_)
     output_zip = f"{os.path.basename(dir_)}_{postfix}.zip"
-    os.system(f'cp -r `ls -A | grep -vE "{temp_dir}"` {temp_dir}')
+    os.system(f'cp -r {dir_}/* {temp_dir_path}')
 
     os.chdir(temp_dir_path)
     os.system(f"zip -r9 {output_zip} *" )
     os.system(f"chmod 755 {output_zip}")
 
-    zip_dest_path = os.path.join(output_zip_path, output_zip)
-    os.rename(output_zip, zip_dest_path)
-    shutil.rmtree(temp_dir_path)
-
+    zip_dest_path = _move_zip_and_remove_temp(output_zip, temp_dir_path, output_path)
     print(f'fuction zip {zip_dest_path} created')
     
     return zip_dest_path    
@@ -161,8 +154,7 @@ def _make_dir_archi(temp_dir_path, layer_zip):
 
 def _make_temp_dir(postfix):
     temp_dir = f"temp{postfix}"
-    cwd = os.getcwd()
-    temp_dir_path = os.path.join(cwd, temp_dir)
+    temp_dir_path = os.path.join('/tmp', temp_dir)
     os.mkdir(temp_dir_path)
 
     return temp_dir_path
@@ -179,3 +171,10 @@ def _copy_editible_packages(temp_dir_path, editible_packages_pattern):
         for target in targets:
             target_path = os.path.join(site_package_path, target)
             os.system(f'cp -r {target_path} {temp_dir_path}')
+
+def _move_zip_and_remove_temp(output_zip, temp_dir_path, output_path):
+    shutil.move(output_zip, output_path)
+    shutil.rmtree(temp_dir_path)
+    zip_dest_path = os.path.join(output_path, output_zip)
+
+    return zip_dest_path
