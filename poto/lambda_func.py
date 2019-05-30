@@ -13,7 +13,7 @@ PACKAGE_ROOT_PATH = 'python'
 PACKAGE_PATH = 'python/lib/python3.6/site-packages'
 LIB_PATH = 'python/lib'
 ZAPPA_OUTPUT_ZIP = 'output.zip'
-DEFAULT_EXCLUDE_PACKS = ['boto3', 'botocore', 'zappa', 'kappa', 'ipython', 'IPython', 'lambda_packages', 'tqdm']
+DEFAULT_EXCLUDE_PACKS = ['boto3', 'botocore', 'zappa', 'kappa', 'ipython', 'IPython', 'lambda_packages', 'tqdm', 'Werkzeug']
 
 
 def create_lambda_layer(zappa_stage, output_path):
