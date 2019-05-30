@@ -28,9 +28,8 @@ if __name__  == '__main__':
     args.zappa_settings_path = set_home(args.zappa_settings_path)
     os.chdir(os.path.dirname(args.zappa_settings_path))
     
-    #layer_zip_path = create_lambda_layer(args.zappa_stage, args.output_path) 
-    layer_zip_path = "/Users/poza/layer_201905291411.zip"
-
+    layer_zip_path = create_lambda_layer(args.zappa_stage, args.output_path) 
+    
     settings = json.load(open("zappa_settings.json"))
     config = json.load(open(args.config_path))
     config['service_name'] = 'lambda'
