@@ -30,8 +30,6 @@ if __name__  == '__main__':
     
     layer_zip_path = create_lambda_layer(args.zappa_stage, args.output_path) 
     
-    os.chdir(args.zappa_settings_path)
-    settings = json.load(open("zappa_settings.json"))
     config = json.load(open(args.aws_config_path))
     lambda_client = get_client('lambda', config)
 

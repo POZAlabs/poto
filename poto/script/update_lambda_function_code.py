@@ -33,8 +33,6 @@ if __name__  == '__main__':
                                                args.is_non_editible_packages, 
                                                args.zappa_stage)
 
-    os.chdir(args.repo_path)
-    settings = json.load(open("zappa_settings.json"))
     config = json.load(open(args.aws_config_path))
     lambda_client = get_client('lambda', config)
 
