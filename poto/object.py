@@ -84,6 +84,30 @@ def download_file(s3, bucket_name, object_name, local_file_path=None):
         local_file_path = object_name
     s3.download_file(bucket_name, object_name, local_file_path)
 
+# TODO: version 붙이기
+def download_file_not_in_local(s3, local_dir, bucket, s3_dir, max_keys=1000, save_dir=None):
+    local_files = [f for f in os.listdir(local_dir) if f[0] != '.']
+    objs = s3.list_objects_v2(Bucket=bucket, Prefix=s3_dir, MaxKeys=max_keys)
+
+    if not save_dir:
+        save_dir = '/tmp'
+
+    s3_files = []
+    for content in objs['Contents']:
+        if content['Key'] == f'{s3_dir}/':
+            continue
+        file_name = os.path.basename(content['Key'])
+        if file_name not in local_files:
+            print(f"{file_name}이 local에 없으므로 다운로드합니다.")
+            save_path = os.path.join(save_dir, file_name)
+            download_file(s3, bucket, content['Key'], save_path)
+        s3_files.append(file_name)
+    
+    diff = set(local_files).difference(s3_files)
+
+    if diff:
+        print(f'다음과 같은 파일들은 로컬에만 존재합니다.\n {diff}')
+
 def delete_file(s3, bucket_name, object_name, warn=True):
     """DELETE an object"""
     if warn:
@@ -109,6 +133,16 @@ def upload_last_dir(s3, bucket_name, local_dir_path):
     for root, file in _walk_dir_v2(local_dir_path):
         local_file_path = os.path.join(root, file)
         upload_path = local_file_path[dir_path_leng_without_last:]
+        upload_file(s3, local_file_path, bucket_name, upload_path)
+
+def upload_last_dir_v2(s3, bucket_name, local_dir_path, upload_dir=None):
+    if not upload_dir:
+        upload_dir = os.path.basename(local_dir_path)
+    for root, file in _walk_dir_v2(local_dir_path):
+        if file[0] == '.':
+            continue
+        local_file_path = os.path.join(root, file)
+        upload_path = os.path.join(upload_dir, file)
         upload_file(s3, local_file_path, bucket_name, upload_path)
 
 def _get_dir_path_length_without_last(dir_path):
