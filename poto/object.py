@@ -85,12 +85,23 @@ def download_file(s3, bucket_name, object_name, local_file_path=None):
     s3.download_file(bucket_name, object_name, local_file_path)
 
 # TODO: version 붙이기
-def download_file_not_in_local(s3, local_dir, bucket, s3_dir, max_keys=1000, save_dir=None):
-    local_files = [f for f in os.listdir(local_dir) if f[0] != '.']
-    objs = s3.list_objects_v2(Bucket=bucket, Prefix=s3_dir, MaxKeys=max_keys)
+def download_file_not_in_local(s3, local_dir_path, bucket_name, s3_dir, max_keys=1000, save_dir=None):
+    """ local directory내에 있는 file과 s3 bucket에 있는 file을 비교해, 
+        local directory에 없는 file을 download 합니다.
+    
+    Args:
+        s3: boto s3 client
+        local_dir_path: str, local path compared to s3
+        bucket_name: str, s3 bucket name
+        s3_dir: str, s3 dir if it's more than one depth, depth delimiter is '/'
+        max_keys: int, max number of files and directories you can get from s3
+        save_dir: str, directory that saves files. default is same with local_dir_path
+    """
+    local_files = [f for f in os.listdir(local_dir_path) if f[0] != '.']
+    objs = s3.list_objects_v2(Bucket=bucket_name, Prefix=s3_dir, MaxKeys=max_keys)
 
     if not save_dir:
-        save_dir = '/tmp'
+        save_dir = local_dir_path
 
     s3_files = []
     for content in objs['Contents']:
@@ -100,7 +111,7 @@ def download_file_not_in_local(s3, local_dir, bucket, s3_dir, max_keys=1000, sav
         if file_name not in local_files:
             print(f"{file_name}이 local에 없으므로 다운로드합니다.")
             save_path = os.path.join(save_dir, file_name)
-            download_file(s3, bucket, content['Key'], save_path)
+            download_file(s3, bucket_name, content['Key'], save_path)
         s3_files.append(file_name)
     
     diff = set(local_files).difference(s3_files)
@@ -136,6 +147,14 @@ def upload_last_dir(s3, bucket_name, local_dir_path):
         upload_file(s3, local_file_path, bucket_name, upload_path)
 
 def upload_last_dir_v2(s3, bucket_name, local_dir_path, upload_dir=None):
+    """ 경로 가장 마지막에 있는 directory에 있는 모든 file을 upload 합니다.
+
+    Args:
+        s3: boto s3 client
+        bucket_name: str, s3 bucket name
+        local_dir_path: str, every files in local_dir_path'll be uploaded to s3
+        upload_dir: str, directory name uploaded in s3, default is same with last path of local_dir_path
+    """
     if not upload_dir:
         upload_dir = os.path.basename(local_dir_path)
     for root, file in _walk_dir_v2(local_dir_path):
