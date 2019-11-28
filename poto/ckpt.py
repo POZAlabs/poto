@@ -9,11 +9,11 @@ CKPT_EXTENSIONS = ['data-00000-of-00001', 'index', 'meta']
 
 
 def download_ckpt(s3, ckpt_dir, training=False):
-    """Download latest ckpt from S3
+    """Download latest ckpt from S3. 
 
     Args:
         s3: Verified s3 client object from boto
-        ckpt_dir: checkpoints dir that starts with `checkpoints`, ends with `/`
+        ckpt_dir: checkpoints dir contains `checkpoints`
         training: using this function as training mode or inference mode
     
     Returns:
@@ -21,10 +21,19 @@ def download_ckpt(s3, ckpt_dir, training=False):
     """
     if ckpt_dir[-1] != '/':
         ckpt_dir += '/'
-    assert ckpt_dir[:12] == 'checkpoints/'
+
+    splited = ckpt_dir.split('/')
+    start_idx = -1
+    for i, path in enumerate(splited):
+        if path == 'checkpoints':
+            start_idx = i
+
+    assert start_idx != -1 , f"{ckpt_dir} doesn't contain `checkpoints`"
+
+    prefix = "/".join(splited[start_idx:])
 
     try:
-        objects = list_object_specific(s3, 'checkpoints', ckpt_dir)
+        objects = list_object_specific(s3, 'checkpoints', prefix)
     except KeyError as e:
         if training:
             return None
@@ -32,15 +41,20 @@ def download_ckpt(s3, ckpt_dir, training=False):
             raise KeyError(e)
     else:
         try:
-            os.mkdir(ckpt_dir)
+            os.makedirs(ckpt_dir)
         except OSError:
             print('Dir already exists.')
         latest_step = max(get_ckpt_steps(objects))
-        download_file(s3, 'checkpoints', os.path.join(ckpt_dir, 'checkpoint'))
+        ckpt_prefix = os.path.join(prefix, 'checkpoint')
+        local_file_path = os.path.join(ckpt_dir, 'checkpoint')
+        download_file(s3, 'checkpoints', object_name=ckpt_prefix, local_file_path=local_file_path)
+        # TODO: config.json까지 download
         for extension in CKPT_EXTENSIONS:
+            file_ = f"{MODEL_FILENAME}-{latest_step}.{extension}"
             download_file(s3=s3,
                         bucket_name='checkpoints',
-                        object_name=os.path.join(ckpt_dir, "{}-{}.{}".format(MODEL_FILENAME, latest_step, extension)))
+                        object_name=os.path.join(prefix, file_),
+                        local_file_path=os.path.join(ckpt_dir, file_))
 
 def get_ckpt_steps(objects):
     return np.unique([int(obj.split(CKPT_START)[-1].split('.')[0])
