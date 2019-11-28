@@ -48,6 +48,7 @@ def download_ckpt(s3, ckpt_dir, training=False):
         ckpt_prefix = os.path.join(prefix, 'checkpoint')
         local_file_path = os.path.join(ckpt_dir, 'checkpoint')
         download_file(s3, 'checkpoints', object_name=ckpt_prefix, local_file_path=local_file_path)
+        # TODO: config.json까지 download
         for extension in CKPT_EXTENSIONS:
             file_ = f"{MODEL_FILENAME}-{latest_step}.{extension}"
             download_file(s3=s3,
