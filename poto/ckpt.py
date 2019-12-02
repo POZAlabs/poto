@@ -2,10 +2,12 @@ import numpy as np
 import os
 import re
 from poto.object import list_object_specific, download_file
+from botocore.client import ClientError
 
 MODEL_FILENAME = 'model_ckpt'
 CKPT_START = MODEL_FILENAME+'-'
 CKPT_EXTENSIONS = ['data-00000-of-00001', 'index', 'meta']
+CONFIG_FORMAT = '{}_config.json'
 
 
 def download_ckpt(s3, ckpt_dir, training=False):
@@ -47,6 +49,7 @@ def download_ckpt(s3, ckpt_dir, training=False):
         latest_step = max(get_ckpt_steps(objects))
         ckpt_prefix = os.path.join(prefix, 'checkpoint')
         local_file_path = os.path.join(ckpt_dir, 'checkpoint')
+        
         download_file(s3, 'checkpoints', object_name=ckpt_prefix, local_file_path=local_file_path)
         # TODO: config.json까지 download
         for extension in CKPT_EXTENSIONS:
@@ -55,6 +58,20 @@ def download_ckpt(s3, ckpt_dir, training=False):
                         bucket_name='checkpoints',
                         object_name=os.path.join(prefix, file_),
                         local_file_path=os.path.join(ckpt_dir, file_))
+        
+        # prefix format: checkpoints/some/
+        project_name = os.path.basename(os.path.dirname(prefix))
+        config_file = CONFIG_FORMAT.format(project_name)
+        
+        try:
+            download_file(
+                s3=s3,
+                bucket_name='checkpoints',
+                object_name=os.path.join(prefix, config_file),
+                local_file_path=os.path.join(ckpt_dir, config_file)
+            )
+        except ClientError:
+            print(f"{project_name} doesn't have model config.json")
 
 def get_ckpt_steps(objects):
     return np.unique([int(obj.split(CKPT_START)[-1].split('.')[0])
