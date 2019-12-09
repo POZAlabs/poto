@@ -155,6 +155,12 @@ def upload_last_dir_v2(s3, bucket_name, local_dir_path, upload_dir=None):
         local_dir_path: str, every files in local_dir_path'll be uploaded to s3
         upload_dir: str, directory name uploaded in s3, default is same with last path of local_dir_path
     """
+    # Upload only files not dir if you append '/' to dir
+    msg = 'Don\'t append `/` to dir {}'
+    assert local_dir_path[-1] != '/', msg.format(local_dir_path)
+    if upload_dir is not None:
+        assert upload_dir[-1] != '/', msg.format(upload_dir)
+
     if not upload_dir:
         upload_dir = os.path.basename(local_dir_path)
     for root, file in _walk_dir_v2(local_dir_path):
