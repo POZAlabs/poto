@@ -82,6 +82,11 @@ def download_file(s3, bucket_name, object_name, local_file_path=None):
     # It returns nothing
     if not local_file_path:
         local_file_path = object_name
+    else:
+        local_file_path = local_file_path if local_file_path[-1] != "/" else local_file_path[:-1]
+        dirname = os.path.dirname(local_file_path)
+        if not os.path.isdir(dirname):
+            os.makedirs(dirname)
     s3.download_file(bucket_name, object_name, local_file_path)
 
 # TODO: version 붙이기
