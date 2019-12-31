@@ -192,13 +192,12 @@ def download_dir_withlocal(s3, bucket_name, dir_object, local_dir_path=None):
     else:
         try:
             if local_dir_path:
-                os.mkdir(local_dir_path)
+                os.makedirs(local_dir_path)
             else:
                 pass
         except OSError:
             pass
         # download each obejcts
-        print(f"download {dir_object}")
         for obj in result['Contents']:
             path = obj['Key']
             if local_dir_path:
@@ -207,7 +206,6 @@ def download_dir_withlocal(s3, bucket_name, dir_object, local_dir_path=None):
             else:
                 local_path = path
             download_file(s3, bucket_name, path, local_path)
-        print("download done")
 
 def download_dir(s3, bucket_name, dir_object, save_tmp=True, force_update=False):
     """Download dir from bucket. Directory must have only one level. 
