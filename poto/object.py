@@ -192,7 +192,7 @@ def download_dir_withlocal(s3, bucket_name, dir_object, local_dir_path=None):
     else:
         try:
             if local_dir_path:
-                os.mkdir(local_dir_path)
+                os.makedirs(local_dir_path)
             else:
                 pass
         except OSError:
