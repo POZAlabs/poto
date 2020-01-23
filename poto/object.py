@@ -267,7 +267,7 @@ def update_metadata(
         object_key: str, Object path in s3
         content_disposition: str, Specifies presentational information for the object.
                              An object which is chrome openable type (mp3, pdf...) 
-                             is opened in browser.
+                             is opened in browser, if you don't pass it.
         content_type: str, A standard MIME type describing the format of the object data. 
                       ex) audio/mp3, application/pdf
     """
