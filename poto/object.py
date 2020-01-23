@@ -252,6 +252,37 @@ def download_dir(s3, bucket_name, dir_object, save_tmp=True, force_update=False)
             download_file(s3, bucket_name, path, local_file_path)
             print("{} downloaded".format(path))
 
+def update_metadata(
+    s3, 
+    bucket_name, 
+    object_key, 
+    content_disposition,
+    content_type
+):
+    """Updates object metadata.
+
+    Args:
+        s3: s3 client from poto.access.get_s3_client
+        bucket_name: str
+        object_key: str, Object path in s3
+        content_disposition: str, Specifies presentational information for the object.
+                             An object which is chrome openable type (mp3, pdf...) 
+                             is opened in browser.
+        content_type: str, A standard MIME type describing the format of the object data. 
+                      ex) audio/mp3, application/pdf
+    """
+    result = s3.head_object(Bucket=bucket_name, Key=object_key)
+    copy_source = os.path.join(bucket_name, object_key)
+    s3.copy_object(
+        Bucket=bucket_name,
+        Key=object_key,
+        ContentDisposition=content_disposition,
+        ContentType=content_type,
+        CopySource=copy_source,
+        Metadata=result["Metadata"],
+        MetadataDirective="REPLACE"
+    )
+
 # developing
 def upload_skip_existing(s3):
     raise NotImplementedError
